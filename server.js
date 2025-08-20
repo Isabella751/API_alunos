@@ -119,6 +119,11 @@ app.put("/alunos/:id", (req, res)=>{
             erro: "UF inválido."
         })
     }  
+    else if (!Number.isInteger(Number(numero))) {
+    return res.status(400).json({
+        erro: "Número inválido. Deve ser um número inteiro."
+    })
+    }
 
     const aluno = alunos.find(aluno => aluno.id === id)
 
