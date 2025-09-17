@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Cadastro de Alunos</h1>
+    <form id="form-aluno">
+        <div>
+            <label for="">NOME*:
+            <input type="text" name="nome" placeholder="Digite seu nome:">
+        </label>
+        </div>
+       
+        <div>
+             <label for=""> CPF*:
+            <input type="text" name="cpf" placeholder="Digite seu cpf:">
+        </label>
+        </div>
+
+        <div>
+             <label for=""> CEP:
+            <input type="text" name="cep" placeholder="Digite seu cep:">
+        </label>
+        </div>
+        
+        <div>
+            <label for=""> UF:
+            <input type="text" name="uf" placeholder="Digite seu uf:">
+        </label>
+        </div>
+
+        <div>
+             <label for=""> RUA:
+            <input type="text" name="rua" placeholder="Digite sua rua:">
+        </label>
+        </div>
+        
+        <div>
+            <label for=""> NUMERO:
+            <input type="number" id="numero" placeholder="Digite seu número:">
+        </label>
+        </div>
+
+        <div>
+            <label for=""> COMPLEMENTO:
+            <input type="text" name="complemento" placeholder="Digite seu complemento:">
+        </label>
+        </div>
+        
+        <button type="submit">Enviar</button>
+        <button type="button">Limpar</button>
+    </form>
+
+    <h2>Lista de Alunos</h2>
+
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>NOME</th>
+                <th>CPF</th>
+                <th>CEP</th>
+                <th>UF</th>
+                <th>RUA</th>
+                <th>NUMERO</th>
+                <th>COMPLEMENTO</th>
+            </tr>
+        </thead>
+        <tbody id ="tbody">
+            <tr>
+                <td>1</td>
+                <td>Bella</td>
+                <td>12345678903</td>
+                <td>01234567</td>
+                <td>SP</td>
+                <td>Av. Arco-iris</td>
+                <td>1580</td>
+                <td>-</td>
+            </tr>
+        </tbody>
+    </table>
+    <script src="./app.js"></script>
+</body>
+
+</html>

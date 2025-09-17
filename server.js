@@ -1,37 +1,32 @@
 // importando express
 const express = require("express");
+const mysql = require("mysql2/promise");
 // cria aplicação
 const app = express();
+// formata o json
 app.set('json spaces', 2)
 app.use(express.json())
 const porta = 3000;
+const conexao = mysql.createPool({
+    host: "localhost",
+    user: "root",
+    password: "senaicurso",
+    database: "escola_db",
+    port: 3306,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+})
 
-const alunos = [
-    {
-        id: 1,
-        nome: "Maria Silva",
-        cpf: "12345678901",
-        cep: "01234567",
-        uf: "SP",
-        rua: "Av. Central",
-        numero: 123,
-        complemento: "Apto 12"
-    },
-    {
-        id: 2,
-        nome: "Lucas",
-        cpf: "13568454619",
-        cep: "0678057",
-        uf: "SP",
-        rua: "Rua paranaense",
-        numero: 673,
-        complemento: "Casa"
-    }
-]
-
-app.get("/alunos", (req, res) => {
-    res.json(alunos)
-      
+app.get("/alunos", async (req, res) => {
+    try {
+        const [retorno] = await conexao.query("SELECT * FROM alunos")
+        //console.log(retorno)
+        res.status(200).json(retorno)
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ erro: "Erro ao consultar alunos."})
+    } 
 })
 
 app.get("/alunos/:id",(req,res) =>{
@@ -46,52 +41,33 @@ app.get("/alunos/:id",(req,res) =>{
     }
 })
 
-app.post("/alunos", (req, res) => {
-    const {nome, cpf, cep, uf, rua, numero, complemento} = req.body;
-    const cpfDoAluno = alunos.find( (aluno => aluno.cpf === cpf))
-    if(!nome || !cpf || !cep || !uf || !rua || !numero){
-        return res.status(400).json({
-            erro: "Nome, cpf, uf, rua e número são obrigatórios."
-        })
-    }
-    else if (cpf.length !== 11){
-        return res.status(400).json({
-            erro: "CPF inválido."
-        })
-    }
-    else if(cpfDoAluno){
-        return res.status(409).json({
-            erro: "CPF duplicado."
-        })
-    }
-    else if (cep.length !== 8){
-        return res.status(400).json({
-            erro: "CEP inválido."
-        })
-    }
-    else if (uf.length !== 2){
-        return res.status(400).json({
-            erro: "UF inválido."
-        })
-    }
-    else if (!Number.isInteger(Number(numero))) {
-    return res.status(400).json({
-        erro: "Número inválido. Deve ser um número inteiro."
-    })
+app.post("/alunos", async (req, res) => {
+
+    try {
+        const {nome, cpf, cep= null,
+            uf = null, rua = null,
+            numero = null, complemento= null
+        } = req.body;
+
+        if(!nome || !cpf) 
+            return res.status(400).json({msg : "Nome e cpf são obrigatorio"})
+        const sql = `
+            INSERT INTO alunos (nome,cpf,cep, uf, rua , numero, complemento)
+            VALUES  (?, ?, ?, ?, ?, ?, ?)`;
+
+        const parametro = [nome, cpf, cep, uf, rua, numero, complemento]
+
+        const [resultado] = await conexao.execute(sql,parametro)
+        console.log(resultado)
+
+        const [novo] = await conexao.execute(`SELECT * FROM alunos WHERE id =  ${resultado.insertId}`)
+        res.status(201).json(novo[0]);
+       
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({erro : "Erro ao inserir alunos"});
     }
 
-    else{
-    const id = alunos.length > 0 ? alunos[alunos.length - 1].id + 1 : 1
-
-    const novoAluno = {id, nome, cpf, cep, uf, rua, numero, complemento}
-
-    alunos.push(novoAluno)
-
-    res.status(201).json({
-        mensagem: "Aluno Cadastrado com sucesso!",
-        aluno: novoAluno
-    })
-    }
 })
 
 app.put("/alunos/:id", (req, res)=>{
@@ -165,4 +141,4 @@ app.delete("/alunos/:id", (req, res)=>{ // Consertar a mensagem do deletado com 
     }
 })
 
-app.listen(porta, () => console.log(`Servidor rodando http://localhost:${porta}/`));""
+app.listen(porta, () => console.log(`Servidor rodando http://localhost:${porta}/`));
