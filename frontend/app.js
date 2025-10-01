@@ -47,7 +47,7 @@ async function excluirAluno(id) {
 
         if (resposta.ok) {
             alert("Aluno excluído com sucesso!");
-            carregarTabela(); // recarrega a lista
+            carregarTabela();
         } else {
             alert("Erro ao excluir aluno!");
         }
