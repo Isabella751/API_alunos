@@ -1,187 +1,95 @@
 console.log("app.js funcionando");
 
-let alunos = [
-  {
-    "id": 1,
-    "nome": "Vitor Lima",
-    "cpf": "12345678910",
-    "cep": "06000000",
-    "uf": "SP",
-    "rua": "Rua Senai",
-    "numero": 123,
-    "complemento": "APTO 12",
-    "create_at": "2025-09-16T11:59:30.000Z",
-    "update_at": "2025-09-16T11:59:30.000Z"
-  },
-  {
-    "id": 2,
-    "nome": "Wendel ",
-    "cpf": "98765432100",
-    "cep": "06000001",
-    "uf": "SP",
-    "rua": "Avenida Central",
-    "numero": 123,
-    "complemento": null,
-    "create_at": "2025-09-16T11:59:30.000Z",
-    "update_at": "2025-09-16T11:59:30.000Z"
-  },
-  {
-    "id": 3,
-    "nome": "Matheus",
-    "cpf": "45678912399",
-    "cep": "06000002",
-    "uf": "SP",
-    "rua": "Rua Nova",
-    "numero": 123,
-    "complemento": "Casa 1",
-    "create_at": "2025-09-16T11:59:30.000Z",
-    "update_at": "2025-09-16T11:59:30.000Z"
-  },
-  {
-    "id": 4,
-    "nome": "Vitor Lima",
-    "cpf": "12345678910",
-    "cep": "06000000",
-    "uf": "SP",
-    "rua": "Rua Senai",
-    "numero": 123,
-    "complemento": "APTO 12",
-    "create_at": "2025-09-16T11:59:37.000Z",
-    "update_at": "2025-09-16T11:59:37.000Z"
-  },
-  {
-    "id": 5,
-    "nome": "Wendel ",
-    "cpf": "98765432100",
-    "cep": "06000001",
-    "uf": "SP",
-    "rua": "Avenida Central",
-    "numero": 123,
-    "complemento": null,
-    "create_at": "2025-09-16T11:59:37.000Z",
-    "update_at": "2025-09-16T11:59:37.000Z"
-  },
-  {
-    "id": 6,
-    "nome": "VICTOR",
-    "cpf": "45678912399",
-    "cep": "06000002",
-    "uf": "SP",
-    "rua": "Rua Nova",
-    "numero": 123,
-    "complemento": "Casa 1",
-    "create_at": "2025-09-16T11:59:37.000Z",
-    "update_at": "2025-09-16T12:01:09.000Z"
-  },
-  {
-    "id": 7,
-    "nome": "Vitor Lima",
-    "cpf": "12345678910",
-    "cep": "06000000",
-    "uf": "SP",
-    "rua": "Rua Senai",
-    "numero": 123,
-    "complemento": "APTO 12",
-    "create_at": "2025-09-16T11:59:45.000Z",
-    "update_at": "2025-09-16T11:59:45.000Z"
-  },
-  {
-    "id": 8,
-    "nome": "Wendel ",
-    "cpf": "98765432100",
-    "cep": "06000001",
-    "uf": "SP",
-    "rua": "Avenida Central",
-    "numero": 123,
-    "complemento": null,
-    "create_at": "2025-09-16T11:59:45.000Z",
-    "update_at": "2025-09-16T11:59:45.000Z"
-  },
-  {
-    "id": 9,
-    "nome": "Matheus",
-    "cpf": "45678912399",
-    "cep": "06000002",
-    "uf": "SP",
-    "rua": "Rua Nova",
-    "numero": 123,
-    "complemento": "Casa 1",
-    "create_at": "2025-09-16T11:59:45.000Z",
-    "update_at": "2025-09-16T11:59:45.000Z"
-  },
-  {
-    "id": 10,
-    "nome": "Nicolas",
-    "cpf": "12345678910",
-    "cep": "06000000",
-    "uf": "SP",
-    "rua": "Rua Senai",
-    "numero": 123,
-    "complemento": "APTO 12",
-    "create_at": "2025-09-16T14:03:19.000Z",
-    "update_at": "2025-09-16T14:03:19.000Z"
-  },
-  {
-    "id": 11,
-    "nome": "Nicolas",
-    "cpf": "12345678910",
-    "cep": "06000000",
-    "uf": "SP",
-    "rua": "Rua Senai",
-    "numero": 123,
-    "complemento": "APTO 12",
-    "create_at": "2025-09-16T14:05:57.000Z",
-    "update_at": "2025-09-16T14:05:57.000Z"
-  },
-  {
-    "id": 12,
-    "nome": "Nicolas",
-    "cpf": "12345678910",
-    "cep": "06000000",
-    "uf": "SP",
-    "rua": "Rua Senai",
-    "numero": 123,
-    "complemento": "APTO 12",
-    "create_at": "2025-09-16T14:06:28.000Z",
-    "update_at": "2025-09-16T14:06:28.000Z"
-  },
-  {
-    "id": 13,
-    "nome": "Vitor",
-    "cpf": "12345678901",
-    "cep": "12345678",
-    "uf": "SP",
-    "rua": "RUA A",
-    "numero": 1,
-    "complemento": null,
-    "create_at": "2025-09-17T11:10:58.000Z",
-    "update_at": "2025-09-17T11:10:58.000Z"
-  }
-];
+async function carregarTabela() {
+    try {
+      const resposta = await fetch("http://localhost:3000/alunos");
+      const ALUNOS = await resposta.json();
+      console.log(ALUNOS); 
 
-function carregarTabela(){
-const tbody = document.getElementById("tbody")
+      const tbody = document.getElementById("tbody")
 
-tbody.innerHTML = "<tr><td colspan='10'>Carregando ...< /td></tr>"
+      tbody.innerHTML = "<tr><td colspan='10'>Carregando...</td></tr>"
 
-    setTimeout(()=>{
-    tbody.innerHTML = "";
-    tbody.innerHTML = alunos.map(a =>
-    <tr>
-    <td>${a.id}</td>
-    <td>${a.nome}</td>
-    <td>${a.cpf}</td>
-    <td>${a.cep}</td>
-    <td>${a.uf}</td>
-    <td>${a.rua} senai</td>
-    <td>${a.numero}</td>
-    <td>${a.complemento}</td>
-    </tr>
+      // setTimeout(() => {
+        tbody.innerHTML = "";
+        tbody.innerHTML = ALUNOS.map(a =>
+          `<tr>
+              <td>${a.id}</td>
+              <td>${a.nome}</td>
+              <td>${a.cpf}</td>
+              <td>${a.cep}</td>
+              <td>${a.uf}</td>
+              <td>${a.rua}</td>
+              <td>${a.numero}</td>
+              <td>${a.complemento}</td>
+              <td> 
+                <button><a href="editar.html?id=${a.id}">Editar</a></button>
+                <button onclick="excluirAluno(${a.id})">Excluir</button>
+              </td>
+          </tr>`
+      ).join("");
+      // }, 2000) // 2 segundos
+      
+    } catch (error) {
+      console.error(error.message);
+    }
+}
 
-).join("");
+async function excluirAluno(id) {
+    if (!confirm("Tem certeza que deseja excluir este aluno?")) {
+        return;
+    }
 
-},5000) // 5 segundos
+    try {
+        const resposta = await fetch(`http://localhost:3000/alunos/${id}`, {
+            method: "DELETE"
+        });
 
+        if (resposta.ok) {
+            alert("Aluno excluído com sucesso!");
+            carregarTabela(); // recarrega a lista
+        } else {
+            alert("Erro ao excluir aluno!");
+        }
+    } catch (error) {
+        console.error("Erro:", error);
+        alert("Erro de conexão com servidor.");
+    }
+}
+
+async function buscarAlunoPorId() {
+    const id = document.getElementById("buscaId").value.trim();
+    const resultadoDiv = document.getElementById("resultadoBusca");
+
+    if (!id) {
+        resultadoDiv.innerHTML = "<span style='color:red'>Digite um ID válido!</span>";
+        return;
+    }
+
+    try {
+        const resposta = await fetch(`http://localhost:3000/alunos/${id}`);
+
+        if (resposta.ok) {
+            const aluno = await resposta.json();
+            resultadoDiv.innerHTML = `
+                <p>ID: ${aluno.id}</p>
+                <p>Nome: ${aluno.nome}</p>
+                <p>CPF: ${aluno.cpf}</p>
+                <p>CEP: ${aluno.cep || '-'}</p>
+                <p>UF: ${aluno.uf || '-'}</p>
+                <p>Rua: ${aluno.rua || '-'}</p>
+                <p>Número: ${aluno.numero || '-'}</p>
+                <p>Complemento: ${aluno.complemento || '-'}</p>
+            `;
+        } else if (resposta.status === 404) {
+            resultadoDiv.innerHTML = "<span style='color:red'>Aluno não encontrado.</span>";
+        } else {
+            resultadoDiv.innerHTML = "<span style='color:red'>Erro ao buscar aluno.</span>";
+        }
+    } catch (error) {
+        console.error("Erro:", error);
+        resultadoDiv.innerHTML = "<span style='color:red'>Erro de conexão com servidor.</span>";
+    }
 }
 
 carregarTabela();

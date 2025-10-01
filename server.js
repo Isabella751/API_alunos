@@ -1,21 +1,24 @@
-// importando express
+// importando express 
 const express = require("express");
-const mysql = require("mysql2/promise");
 // cria aplicação
 const app = express();
+app.use(express.json());
+const porta = 3000;
 // formata o json
 app.set('json spaces', 2)
-app.use(express.json())
-const porta = 3000;
+const cors = require("cors");
+app.use(cors());
+const mysql = require("mysql2/promise");
+
 const conexao = mysql.createPool({
     host: "localhost",
     user: "root",
-    password: "senaicurso",
+    password : "senaicurso",
     database: "escola_db",
     port: 3306,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit : 0
 })
 
 app.get("/alunos", async (req, res) => {
@@ -23,26 +26,13 @@ app.get("/alunos", async (req, res) => {
         const [retorno] = await conexao.query("SELECT * FROM alunos")
         //console.log(retorno)
         res.status(200).json(retorno)
-    } catch (err) {
-        console.log(err);
+    } catch (error) {
+        console.log(error);
         res.status(500).json({ erro: "Erro ao consultar alunos."})
     } 
 })
 
-app.get("/alunos/:id",(req,res) =>{
-    const id = parseInt(req.params.id)
-    const aluno = alunos.find( (aluno => aluno.id === id))
-    if(aluno){
-        res.json(aluno)
-    }else{
-        res.status(404).json(
-            {erro: "Aluno não encontrado."}
-        )
-    }
-})
-
 app.post("/alunos", async (req, res) => {
-
     try {
         const {nome, cpf, cep= null,
             uf = null, rua = null,
@@ -70,75 +60,66 @@ app.post("/alunos", async (req, res) => {
 
 })
 
-app.put("/alunos/:id", (req, res)=>{
-    const id = parseInt(req.params.id)
-    const {nome, cpf, cep, uf, rua, numero, complemento} = req.body;
+app.get("/alunos/:id", async (req, res) => {
+    const id = req.params.id;
+    try {
+        const [retorno] = await conexao.query("SELECT * FROM alunos WHERE id = ?", [id]);
 
-    if(!nome || !cpf || !cep || !uf || !rua || !numero){
-        return res.status(400).json({
-            erro: "Nome, cpf, uf, rua e número são obrigatórios."
-        })
-    }
-    else if (cpf.length !== 11){
-        return res.status(400).json({
-            erro: "CPF inválido."
-        })
-        
-    }
-    else if (cep.length !== 8){
-        return res.status(400).json({
-            erro: "CEP inválido."
-        })
-    }
-    else if (uf.length !== 2){
-        return res.status(400).json({
-            erro: "UF inválido."
-        })
-    }  
-    else if (!Number.isInteger(Number(numero))) {
-    return res.status(400).json({
-        erro: "Número inválido. Deve ser um número inteiro."
-    })
-    }
+        if (retorno.length === 0) {
+            return res.status(404).json({ msg: "Aluno não encontrado" });
+        }
 
-    const aluno = alunos.find(aluno => aluno.id === id)
-
-    if(!aluno){
-         return res.status(400).json({
-            erro: "Aluno não encontrado."
-        })
+        res.status(200).json(retorno[0]);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ erro: "Erro ao buscar aluno" });
     }
-    else{
-    aluno.nome = nome;
-    aluno.cpf = cpf;
-    aluno.cep = cep;
-    aluno.uf = uf;
-    aluno.rua = rua;
-    aluno.numero = numero;
-    aluno.complemento = complemento;
+});
 
-    res.json({
-        mensagem: "Aluno Atualizado com sucesso!"
-    })
+app.put("/alunos/:id", async (req, res) => {
+    const id = req.params.id;
+    try {
+        const { nome, cpf, cep = null, uf = null, rua = null, numero = null, complemento = null } = req.body;
+
+        if (!nome || !cpf) 
+            return res.status(400).json({ msg: "Nome e CPF são obrigatórios" });
+
+        const sql = `
+            UPDATE alunos
+            SET nome = ?, cpf = ?, cep = ?, uf = ?, rua = ?, numero = ?, complemento = ?
+            WHERE id = ?`;
+
+        const parametros = [nome, cpf, cep, uf, rua, numero, complemento, id];
+
+        const [resultado] = await conexao.execute(sql, parametros);
+
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ msg: "Aluno não encontrado" });
+        }
+
+        const [atualizado] = await conexao.execute(`SELECT * FROM alunos WHERE id = ${id}`);
+        res.status(200).json(atualizado[0]);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ erro: "Erro ao atualizar aluno" });
     }
-})
+});
 
-app.delete("/alunos/:id", (req, res)=>{ // Consertar a mensagem do deletado com sucesso
-    const id = parseInt(req.params.id);
+app.delete("/alunos/:id", async (req, res) => {
+    const id = req.params.id;
+    try {
+        const [resultado] = await conexao.execute("DELETE FROM alunos WHERE id = ?", [id]);
 
-    const indice = alunos.findIndex(a => a.id === id)
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ msg: "Aluno não encontrado" });
+        }
 
-    if( indice === -1){
-        return res.status(404).json({
-            mensagem :"Aluno não encontrado."
-        })
+        res.status(200).json({ msg: "Aluno excluído com sucesso!" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ erro: "Erro ao excluir aluno" });
     }
-    else{
-    alunos.splice(indice,1);
-    res.status(204).json({
-        mensagem: "Aluno deletado com sucesso!"
-    })
-    }
-})
+});
 
 app.listen(porta, () => console.log(`Servidor rodando http://localhost:${porta}/`));
